@@ -13,6 +13,8 @@ const resultEl = document.getElementById('result');
 const progressFill = document.getElementById('progressFill');
 const timerSelect = document.getElementById('timerSelect');
 const difficultySelect = document.getElementById('difficultySelect');
+const historyEl = document.getElementById('history');
+const personalBestEl = document.getElementById('personalBest');
 
 const easyTexts = [
     "The quick brown fox jumps over the lazy dog.",
@@ -34,6 +36,31 @@ const hardTexts = [
     "Quantum entanglement is a physical phenomenon that occurs when pairs or groups of particles are generated, interact, or share spatial proximity in ways such that the quantum state of each particle cannot be described independently."
 ];
 
+function updatePersonalBestDisplay() {
+    personalBestEl.innerHTML = `
+        <div>Best WPM: ${personalBest.wpm}</div>
+        <div>Best Accuracy: ${personalBest.accuracy}%</div>
+        <div>Best Streak: ${personalBest.streak}</div>
+        <div>Total Tests: ${personalBest.totalTests}</div>
+        <div>Average WPM: ${personalBest.averageWPM}</div>
+    `;
+}
+
+function updateHistoryDisplay() {
+    historyEl.innerHTML = testHistory
+        .map((result, index) => `
+            <div class="history-item">
+                Test ${index + 1}: ${result.wpm} WPM, 
+                ${result.accuracy}% accuracy, 
+                ${result.streak} streak, 
+                ${result.difficulty} level
+                ${getMedal(result.wpm)}
+                (${result.date})
+            </div>
+        `)
+        .join('');
+}
+
 let timeLeft;
 let timeInterval = null;
 let charIndex = 0;
@@ -42,7 +69,15 @@ let isTyping = false;
 let currentStreak = 0;
 let maxStreak = 0;
 let isPaused = false;
-let isDarkTheme = false;
+let personalBest = JSON.parse(localStorage.getItem('personalBest')) || {
+    wpm: 0,
+    accuracy: 0,
+    streak: 0,
+    totalTests: 0,
+    averageWPM: 0
+};
+let testHistory = JSON.parse(localStorage.getItem('testHistory')) || [];
+let isDarkTheme = localStorage.getItem('isDarkTheme') === 'true';
 
 function getTexts() {
     const texts = {
@@ -180,10 +215,42 @@ function finishTest() {
         accuracy: parseInt(accuracyEl.innerText),
         streak: maxStreak,
         difficulty: difficultySelect.value,
-        time: parseInt(timerSelect.value)
+        time: parseInt(timerSelect.value),
+        date: new Date().toLocaleString()
     };
     
+    updatePersonalBest(result);
+    updateTestHistory(result);
     showResult(result);
+    saveToLocalStorage();
+}
+
+function updatePersonalBest(result) {
+    if (result.wpm > personalBest.wpm) {
+        personalBest.wpm = result.wpm;
+    }
+    if (result.accuracy > personalBest.accuracy) {
+        personalBest.accuracy = result.accuracy;
+    }
+    if (result.streak > personalBest.streak) {
+        personalBest.streak = result.streak;
+    }
+    
+    personalBest.totalTests = (personalBest.totalTests || 0) + 1;
+    personalBest.averageWPM = Math.round(((personalBest.averageWPM || 0) * (personalBest.totalTests - 1) + result.wpm) / personalBest.totalTests);
+    
+    updatePersonalBestDisplay();
+}
+
+function updateTestHistory(result) {
+    testHistory.unshift(result);
+    if (testHistory.length > 10) testHistory.pop();
+    updateHistoryDisplay();
+}
+
+function saveToLocalStorage() {
+    localStorage.setItem('personalBest', JSON.stringify(personalBest));
+    localStorage.setItem('testHistory', JSON.stringify(testHistory));
 }
 
 function showResult(result) {
@@ -235,9 +302,13 @@ function resetTest() {
 function toggleTheme() {
     isDarkTheme = !isDarkTheme;
     document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
+    localStorage.setItem('isDarkTheme', isDarkTheme);
 }
 
 function init() {
+    document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
+    updatePersonalBestDisplay();
+    updateHistoryDisplay();
     loadText();
 }
 
