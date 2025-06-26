@@ -8,13 +8,44 @@
 </head>
 <body>
     <div class="container">
-        <h1>Typing Speed Tester</h1>
+        <div class="header">
+            <h1>Typing Speed Tester</h1>
+            <div class="timer">Time: <span id="time">60</span>s</div>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-box">
+                <span id="wpm">0</span>
+                <label>WPM</label>
+            </div>
+            <div class="stat-box">
+                <span id="accuracy">0</span>
+                <label>Accuracy %</label>
+            </div>
+            <div class="stat-box">
+                <span id="cpm">0</span>
+                <label>CPM</label>
+            </div>
+        </div>
+
         <div class="text-display" id="textDisplay"></div>
-        <textarea id="textInput" class="text-input" placeholder="Start typing here..."></textarea>
+        
+        <textarea
+            id="textInput"
+            class="text-input"
+            placeholder="Start typing here..."
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+        ></textarea>
+
         <div class="buttons">
             <button id="startBtn" class="btn">Start Test</button>
             <button id="resetBtn" class="btn">Reset</button>
         </div>
+
+        <div class="result" id="result"></div>
     </div>
     <script src="script.js"></script>
 </body>

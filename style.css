@@ -10,6 +10,8 @@
     --secondary-bg: #e07a5f;
     --accent-color: #3d405b;
     --text-color: #3d405b;
+    --success-color: #81b29a;
+    --error-color: #f07167;
     --container-bg: #ffffff;
 }
 
@@ -20,10 +22,11 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: all 0.3s ease;
 }
 
 .container {
-    max-width: 800px;
+    max-width: 900px;
     width: 95%;
     background: var(--container-bg);
     padding: 25px;
@@ -31,12 +34,54 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
 h1 {
     color: var(--text-color);
     font-size: 2.5rem;
     font-weight: 700;
+    margin: 0;
+}
+
+.timer {
+    font-size: 1.3rem;
+    color: var(--container-bg);
+    font-weight: 600;
+    background: var(--accent-color);
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stat-box {
+    background: var(--accent-color);
+    padding: 15px;
+    border-radius: 10px;
     text-align: center;
-    margin-bottom: 25px;
+}
+
+.stat-box span {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--container-bg);
+    margin-bottom: 5px;
+}
+
+.stat-box label {
+    color: var(--container-bg);
+    font-size: 0.9rem;
 }
 
 .text-display {
@@ -61,6 +106,7 @@ h1 {
     margin-bottom: 20px;
     background: var(--container-bg);
     color: var(--text-color);
+    transition: border-color 0.3s;
 }
 
 .text-input:focus {
@@ -72,6 +118,7 @@ h1 {
     display: flex;
     gap: 15px;
     justify-content: center;
+    margin-bottom: 20px;
 }
 
 .btn {
@@ -83,9 +130,37 @@ h1 {
     cursor: pointer;
     background: var(--accent-color);
     color: var(--container-bg);
-    transition: transform 0.3s;
+    transition: transform 0.3s, opacity 0.3s;
 }
 
 .btn:hover {
     transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+.result {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--text-color);
+    font-weight: 600;
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 10px;
+    background: var(--primary-bg);
+}
+
+.correct {
+    color: var(--success-color);
+}
+
+.incorrect {
+    color: var(--error-color);
+    text-decoration: underline;
+}
+
+.current {
+    background-color: var(--accent-color);
+    color: var(--container-bg);
+    border-radius: 2px;
+    padding: 0 2px;
 }
