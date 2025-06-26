@@ -39,6 +39,59 @@ function resetStats() {
     updateStats();
 }
 
+function initTyping() {
+    const characters = textDisplay.querySelectorAll('span');
+    const typedChar = textInput.value.charAt(charIndex);
+    
+    if (charIndex < characters.length) {
+        if (!isTyping && typedChar) {
+            startTypingTest();
+        }
+
+        if (typedChar == null) {
+            handleBackspace(characters);
+        } else {
+            handleCharacterTyping(characters, typedChar);
+        }
+
+        updateStats();
+    } else {
+        finishTest();
+    }
+}
+
+function startTypingTest() {
+    timeLeft = 60;
+    timeInterval = setInterval(initTimer, 1000);
+    isTyping = true;
+}
+
+function handleBackspace(characters) {
+    if (charIndex > 0) {
+        charIndex--;
+        if (characters[charIndex].classList.contains('incorrect')) {
+            mistakes--;
+        }
+        characters[charIndex].classList.remove('correct', 'incorrect');
+        characters[charIndex].classList.add('current');
+    }
+}
+
+function handleCharacterTyping(characters, typedChar) {
+    const isCorrect = characters[charIndex].innerText === typedChar;
+    characters[charIndex].classList.add(isCorrect ? 'correct' : 'incorrect');
+    
+    if (!isCorrect) {
+        mistakes++;
+    }
+    
+    characters[charIndex].classList.remove('current');
+    if (charIndex + 1 < characters.length) {
+        characters[charIndex + 1].classList.add('current');
+    }
+    charIndex++;
+}
+
 function updateStats() {
     const timeElapsed = 60 - timeLeft;
     if (timeElapsed === 0) return;
@@ -53,6 +106,37 @@ function updateStats() {
     accuracyEl.innerText = accuracy;
 }
 
+function initTimer() {
+    if (timeLeft > 0) {
+        timeLeft--;
+        timeEl.innerText = timeLeft;
+    } else {
+        finishTest();
+    }
+}
+
+function finishTest() {
+    clearInterval(timeInterval);
+    textInput.disabled = true;
+    
+    const result = {
+        wpm: parseInt(wpmEl.innerText),
+        cpm: parseInt(cpmEl.innerText),
+        accuracy: parseInt(accuracyEl.innerText)
+    };
+    
+    showResult(result);
+}
+
+function showResult(result) {
+    resultEl.innerHTML = `
+        Test Complete!<br>
+        Speed: ${result.wpm} WPM | 
+        Accuracy: ${result.accuracy}% | 
+        CPM: ${result.cpm}
+    `;
+}
+
 function resetTest() {
     clearInterval(timeInterval);
     timeLeft = 60;
@@ -63,11 +147,11 @@ function resetTest() {
     loadText();
 }
 
+textInput.addEventListener('input', initTyping);
 startBtn.addEventListener('click', () => {
     textInput.focus();
     resetTest();
 });
-
 resetBtn.addEventListener('click', resetTest);
 
 loadText();
