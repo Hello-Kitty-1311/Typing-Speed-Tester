@@ -10,12 +10,11 @@ const resetBtn = document.getElementById('resetBtn');
 const pauseBtn = document.getElementById('pauseBtn');
 const themeBtn = document.getElementById('themeBtn');
 const resultEl = document.getElementById('result');
+const historyEl = document.getElementById('history');
+const personalBestEl = document.getElementById('personalBest');
 const progressFill = document.getElementById('progressFill');
 const timerSelect = document.getElementById('timerSelect');
 const difficultySelect = document.getElementById('difficultySelect');
-const historyEl = document.getElementById('history');
-const personalBestEl = document.getElementById('personalBest');
-let typingSound = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU');
 
 const easyTexts = [
     "The quick brown fox jumps over the lazy dog.",
@@ -56,31 +55,6 @@ const hardTexts = [
     "The development of brain-computer interfaces raises ethical considerations regarding the boundaries between human cognition and artificial systems."
 ];
 
-function updatePersonalBestDisplay() {
-    personalBestEl.innerHTML = `
-        <div>Best WPM: ${personalBest.wpm}</div>
-        <div>Best Accuracy: ${personalBest.accuracy}%</div>
-        <div>Best Streak: ${personalBest.streak}</div>
-        <div>Total Tests: ${personalBest.totalTests}</div>
-        <div>Average WPM: ${personalBest.averageWPM}</div>
-    `;
-}
-
-function updateHistoryDisplay() {
-    historyEl.innerHTML = testHistory
-        .map((result, index) => `
-            <div class="history-item">
-                Test ${index + 1}: ${result.wpm} WPM, 
-                ${result.accuracy}% accuracy, 
-                ${result.streak} streak, 
-                ${result.difficulty} level
-                ${getMedal(result.wpm)}
-                (${result.date})
-            </div>
-        `)
-        .join('');
-}
-
 let timeLeft;
 let timeInterval = null;
 let charIndex = 0;
@@ -98,6 +72,7 @@ let personalBest = JSON.parse(localStorage.getItem('personalBest')) || {
 };
 let testHistory = JSON.parse(localStorage.getItem('testHistory')) || [];
 let isDarkTheme = localStorage.getItem('isDarkTheme') === 'true';
+let typingSound = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU');
 
 function getTexts() {
     const texts = {
@@ -198,6 +173,7 @@ function updateStats() {
 
     const totalChars = charIndex;
     const netWPM = Math.round(((totalChars / 5) / timeElapsed) * 60);
+    const grossWPM = Math.round(((totalChars + mistakes) / 5 / timeElapsed) * 60);
     const cpm = Math.round((totalChars / timeElapsed) * 60);
     const accuracy = Math.round(((totalChars - mistakes) / totalChars) * 100) || 0;
 
@@ -268,10 +244,90 @@ function updatePersonalBest(result) {
     updatePersonalBestDisplay();
 }
 
+function updatePersonalBestDisplay() {
+    personalBestEl.innerHTML = `
+        <div>Best WPM: ${personalBest.wpm}</div>
+        <div>Best Accuracy: ${personalBest.accuracy}%</div>
+        <div>Best Streak: ${personalBest.streak}</div>
+        <div>Total Tests: ${personalBest.totalTests}</div>
+        <div>Average WPM: ${personalBest.averageWPM}</div>
+    `;
+}
+
 function updateTestHistory(result) {
     testHistory.unshift(result);
     if (testHistory.length > 10) testHistory.pop();
     updateHistoryDisplay();
+}
+
+function showResult(result) {
+    const improvement = result.wpm > personalBest.averageWPM ? '🎯 New Personal Best!' : '';
+    const medal = getMedal(result.wpm);
+    resultEl.innerHTML = `
+        Test Complete! ${improvement} ${medal}<br>
+        Speed: ${result.wpm} WPM | 
+        Accuracy: ${result.accuracy}% | 
+        Streak: ${result.streak} | 
+        Level: ${result.difficulty}
+    `;
+}
+
+function getMedal(wpm) {
+    if (wpm >= 100) return '🏆';
+    if (wpm >= 80) return '🥇';
+    if (wpm >= 60) return '🥈';
+    if (wpm >= 40) return '🥉';
+    return '🎯';
+}
+
+function updateHistoryDisplay() {
+    historyEl.innerHTML = testHistory
+        .map((result, index) => `
+            <div class="history-item">
+                Test ${index + 1}: ${result.wpm} WPM, 
+                ${result.accuracy}% accuracy, 
+                ${result.streak} streak, 
+                ${result.difficulty} level
+                ${getMedal(result.wpm)}
+                (${result.date})
+            </div>
+        `)
+        .join('');
+}
+
+function togglePause(e) {
+    if (e && e.shiftKey && e.key === 'Enter' || !e) {
+        isPaused = !isPaused;
+        pauseBtn.innerText = isPaused ? 'Resume' : 'Pause';
+        textInput.disabled = isPaused;
+        
+        if (isPaused) {
+            clearInterval(timeInterval);
+            textDisplay.style.opacity = '0.7';
+        } else {
+            timeInterval = setInterval(initTimer, 1000);
+            textDisplay.style.opacity = '1';
+        }
+    }
+}
+
+function resetTest() {
+    clearInterval(timeInterval);
+    timeLeft = parseInt(timerSelect.value);
+    timeEl.innerText = timeLeft;
+    timeEl.style.color = 'var(--text-color)';
+    textInput.disabled = false;
+    textDisplay.style.opacity = '1';
+    pauseBtn.innerText = 'Pause';
+    resultEl.innerHTML = '';
+    resetStats();
+    loadText();
+}
+
+function toggleTheme() {
+    isDarkTheme = !isDarkTheme;
+    document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
+    localStorage.setItem('isDarkTheme', isDarkTheme);
 }
 
 function saveToLocalStorage() {
@@ -297,59 +353,6 @@ function vibrate() {
     }
 }
 
-function showResult(result) {
-    const improvement = result.wpm > personalBest.averageWPM ? '🎯 New Personal Best!' : '';
-    const medal = getMedal(result.wpm);
-    resultEl.innerHTML = `
-        Test Complete! ${improvement} ${medal}<br>
-        Speed: ${result.wpm} WPM | 
-        Accuracy: ${result.accuracy}% | 
-        Streak: ${result.streak} | 
-        Level: ${result.difficulty}
-    `;
-}
-
-function getMedal(wpm) {
-    if (wpm >= 100) return '🏆';
-    if (wpm >= 80) return '🥇';
-    if (wpm >= 60) return '🥈';
-    if (wpm >= 40) return '🥉';
-    return '🎯';
-}
-
-function togglePause() {
-    isPaused = !isPaused;
-    pauseBtn.innerText = isPaused ? 'Resume' : 'Pause';
-    textInput.disabled = isPaused;
-    
-    if (isPaused) {
-        clearInterval(timeInterval);
-        textDisplay.style.opacity = '0.7';
-    } else {
-        timeInterval = setInterval(initTimer, 1000);
-        textDisplay.style.opacity = '1';
-    }
-}
-
-function resetTest() {
-    clearInterval(timeInterval);
-    timeLeft = parseInt(timerSelect.value);
-    timeEl.innerText = timeLeft;
-    timeEl.style.color = 'var(--text-color)';
-    textInput.disabled = false;
-    textDisplay.style.opacity = '1';
-    pauseBtn.innerText = 'Pause';
-    resultEl.innerHTML = '';
-    resetStats();
-    loadText();
-}
-
-function toggleTheme() {
-    isDarkTheme = !isDarkTheme;
-    document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
-    localStorage.setItem('isDarkTheme', isDarkTheme);
-}
-
 function init() {
     document.body.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
     updatePersonalBestDisplay();
@@ -357,13 +360,26 @@ function init() {
     loadText();
 }
 
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault();
+        textInput.focus();
+        resetTest();
+    } else if (e.key === 'Escape') {
+        resetTest();
+    } else if (e.shiftKey && e.key === 'Enter') {
+        e.preventDefault();
+        togglePause(e);
+    }
+});
+
 textInput.addEventListener('input', initTyping);
 startBtn.addEventListener('click', () => {
     textInput.focus();
     resetTest();
 });
 resetBtn.addEventListener('click', resetTest);
-pauseBtn.addEventListener('click', togglePause);
+pauseBtn.addEventListener('click', () => togglePause());
 themeBtn.addEventListener('click', toggleTheme);
 timerSelect.addEventListener('change', resetTest);
 difficultySelect.addEventListener('change', resetTest);

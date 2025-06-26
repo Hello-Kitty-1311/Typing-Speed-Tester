@@ -13,6 +13,16 @@
     --success-color: #81b29a;
     --error-color: #f07167;
     --container-bg: #ffffff;
+    --progress-bg: #eee;
+}
+
+[data-theme="dark"] {
+    --primary-bg: #2d3142;
+    --secondary-bg: #4f5d75;
+    --accent-color: #bfc0c0;
+    --text-color: #ffffff;
+    --container-bg: #3d405b;
+    --progress-bg: #4f5d75;
 }
 
 body {
@@ -37,8 +47,16 @@ body {
 .header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.title-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 h1 {
@@ -48,6 +66,32 @@ h1 {
     margin: 0;
 }
 
+.settings {
+    display: flex;
+    gap: 10px;
+}
+
+.settings-select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent-color);
+    color: var(--container-bg);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.settings-select:hover {
+    opacity: 0.9;
+}
+
+.timer-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
 .timer {
     font-size: 1.3rem;
     color: var(--container-bg);
@@ -55,6 +99,21 @@ h1 {
     background: var(--accent-color);
     padding: 10px 20px;
     border-radius: 10px;
+}
+
+.theme-btn {
+    padding: 10px;
+    border: none;
+    border-radius: 50%;
+    background: var(--accent-color);
+    color: var(--container-bg);
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: transform 0.3s;
+}
+
+.theme-btn:hover {
+    transform: rotate(180deg);
 }
 
 .stats-container {
@@ -69,6 +128,11 @@ h1 {
     padding: 15px;
     border-radius: 10px;
     text-align: center;
+    transition: transform 0.3s;
+}
+
+.stat-box:hover {
+    transform: translateY(-3px);
 }
 
 .stat-box span {
@@ -82,6 +146,21 @@ h1 {
 .stat-box label {
     color: var(--container-bg);
     font-size: 0.9rem;
+}
+
+.progress-bar {
+    height: 6px;
+    background: var(--progress-bg);
+    border-radius: 3px;
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--success-color);
+    width: 0;
+    transition: width 0.3s ease;
 }
 
 .text-display {
@@ -115,9 +194,9 @@ h1 {
 }
 
 .buttons {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 15px;
-    justify-content: center;
     margin-bottom: 20px;
 }
 
@@ -138,6 +217,10 @@ h1 {
     opacity: 0.9;
 }
 
+.btn:active {
+    transform: translateY(0);
+}
+
 .result {
     text-align: center;
     font-size: 1.2rem;
@@ -147,22 +230,6 @@ h1 {
     padding: 15px;
     border-radius: 10px;
     background: var(--primary-bg);
-}
-
-.correct {
-    color: var(--success-color);
-}
-
-.incorrect {
-    color: var(--error-color);
-    text-decoration: underline;
-}
-
-.current {
-    background-color: var(--accent-color);
-    color: var(--container-bg);
-    border-radius: 2px;
-    padding: 0 2px;
 }
 
 .stats-details {
@@ -208,4 +275,90 @@ h1 {
     padding: 4px 8px;
     border-radius: 4px;
     margin: 0 5px;
+}
+
+.correct {
+    color: var(--success-color);
+}
+
+.incorrect {
+    color: var(--error-color);
+    text-decoration: underline;
+}
+
+.current {
+    background-color: var(--accent-color);
+    color: var(--container-bg);
+    border-radius: 2px;
+    padding: 0 2px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+        width: 100%;
+    }
+    
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+    
+    .title-section {
+        align-items: center;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+    
+    .settings {
+        justify-content: center;
+    }
+    
+    .timer-section {
+        justify-content: center;
+    }
+    
+    .timer {
+        font-size: 1.1rem;
+    }
+    
+    .text-display, .text-input {
+        font-size: 1rem;
+        padding: 12px;
+    }
+    
+    .stat-box span {
+        font-size: 1.5rem;
+    }
+    
+    .keyboard-shortcuts {
+        display: none;
+    }
+    
+    .stats-details {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .settings {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .timer-section {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .stat-box {
+        padding: 10px;
+    }
 }
