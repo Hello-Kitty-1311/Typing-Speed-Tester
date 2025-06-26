@@ -9,8 +9,26 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Typing Speed Tester</h1>
-            <div class="timer">Time: <span id="time">60</span>s</div>
+            <div class="title-section">
+                <h1>Typing Speed Tester</h1>
+                <div class="settings">
+                    <select id="difficultySelect" class="settings-select">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                    <select id="timerSelect" class="settings-select">
+                        <option value="30">30s</option>
+                        <option value="60" selected>60s</option>
+                        <option value="120">120s</option>
+                        <option value="300">5min</option>
+                    </select>
+                </div>
+            </div>
+            <div class="timer-section">
+                <div class="timer">Time: <span id="time">60</span>s</div>
+                <button id="themeBtn" class="theme-btn">🌓</button>
+            </div>
         </div>
 
         <div class="stats-container">
@@ -26,6 +44,14 @@
                 <span id="cpm">0</span>
                 <label>CPM</label>
             </div>
+            <div class="stat-box">
+                <span id="streak">0</span>
+                <label>Streak</label>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
         </div>
 
         <div class="text-display" id="textDisplay"></div>
@@ -43,6 +69,7 @@
         <div class="buttons">
             <button id="startBtn" class="btn">Start Test</button>
             <button id="resetBtn" class="btn">Reset</button>
+            <button id="pauseBtn" class="btn">Pause</button>
         </div>
 
         <div class="result" id="result"></div>
