@@ -2,55 +2,90 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+:root {
+    --primary-bg: #f4f1de;
+    --secondary-bg: #e07a5f;
+    --accent-color: #3d405b;
+    --text-color: #3d405b;
+    --container-bg: #ffffff;
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background: #f0f0f0;
+    min-height: 100vh;
+    background: var(--primary-bg);
     padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .container {
     max-width: 800px;
-    margin: 0 auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
+    width: 95%;
+    background: var(--container-bg);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
+    color: var(--text-color);
+    font-size: 2.5rem;
+    font-weight: 700;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .text-display {
-    background: #f9f9f9;
+    background: var(--primary-bg);
     padding: 20px;
-    border-radius: 5px;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    line-height: 1.6;
     margin-bottom: 20px;
-    min-height: 100px;
+    min-height: 120px;
+    color: var(--text-color);
 }
 
 .text-input {
     width: 100%;
-    height: 100px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 20px;
+    height: 120px;
+    padding: 15px;
+    border: 2px solid var(--accent-color);
+    border-radius: 10px;
+    font-size: 1.1rem;
     resize: none;
+    margin-bottom: 20px;
+    background: var(--container-bg);
+    color: var(--text-color);
+}
+
+.text-input:focus {
+    outline: none;
+    border-color: var(--secondary-bg);
 }
 
 .buttons {
     display: flex;
-    gap: 10px;
+    gap: 15px;
+    justify-content: center;
 }
 
 .btn {
-    padding: 10px 20px;
+    padding: 12px 25px;
     border: none;
-    border-radius: 5px;
-    background: #007bff;
-    color: white;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
+    background: var(--accent-color);
+    color: var(--container-bg);
+    transition: transform 0.3s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
 }
