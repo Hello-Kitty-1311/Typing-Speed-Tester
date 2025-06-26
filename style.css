@@ -192,3 +192,20 @@ h1 {
 .history-item:last-child {
     border-bottom: none;
 }
+
+.keyboard-shortcuts {
+    text-align: center;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--accent-color);
+}
+
+.keyboard-shortcuts span {
+    background: var(--accent-color);
+    color: var(--container-bg);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin: 0 5px;
+}

@@ -15,25 +15,45 @@ const timerSelect = document.getElementById('timerSelect');
 const difficultySelect = document.getElementById('difficultySelect');
 const historyEl = document.getElementById('history');
 const personalBestEl = document.getElementById('personalBest');
+let typingSound = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU');
 
 const easyTexts = [
     "The quick brown fox jumps over the lazy dog.",
     "Life is like riding a bicycle. To keep your balance, you must keep moving.",
     "Success is not final, failure is not fatal: it is the courage to continue that counts.",
     "Everything you can imagine is real if you believe in yourself.",
-    "The only way to do great work is to love what you do."
+    "The only way to do great work is to love what you do.",
+    "Practice makes perfect, but perfection takes time and dedication.",
+    "Every journey begins with a single step forward.",
+    "Small progress is still progress worth celebrating.",
+    "The best way to predict the future is to create it yourself.",
+    "Your attitude determines your direction in life."
 ];
 
 const mediumTexts = [
     "Programming is the art of telling another human what one wants the computer to do efficiently and effectively.",
     "Innovation distinguishes between a leader and a follower in the modern technological world we live in.",
     "The future belongs to those who believe in the beauty of their dreams and pursue them with determination.",
-    "Change is the law of life, and those who look only to the past or present are certain to miss the future ahead."
+    "Change is the law of life, and those who look only to the past or present are certain to miss the future ahead.",
+    "Education is not the learning of facts, but the training of the mind to think analytically and critically.",
+    "Technology is best when it brings people together to share experiences and create memories.",
+    "Success in the digital age requires constant adaptation and willingness to learn new skills.",
+    "The best innovations come from understanding both technology and human psychology.",
+    "Creativity is intelligence having fun while solving complex problems.",
+    "Great design is not just what it looks like, but how it works for users."
 ];
 
 const hardTexts = [
     "The synthesis of artificial consciousness represents one of the most ambitious and controversial goals in the field of artificial intelligence and cognitive science.",
-    "Quantum entanglement is a physical phenomenon that occurs when pairs or groups of particles are generated, interact, or share spatial proximity in ways such that the quantum state of each particle cannot be described independently."
+    "Quantum entanglement is a physical phenomenon that occurs when pairs or groups of particles are generated, interact, or share spatial proximity in ways such that the quantum state of each particle cannot be described independently.",
+    "The philosophical implications of technological singularity raise profound questions about the future of human consciousness and the nature of intelligence itself.",
+    "The complexity of cryptographic algorithms relies on mathematical principles that ensure secure communication in an era of unprecedented digital interconnectivity.",
+    "The intricate relationship between epigenetic modifications and environmental factors demonstrates the remarkable plasticity of genetic expression in living organisms.",
+    "The convergence of nanotechnology and biotechnology presents unprecedented opportunities for advancing medical treatments and human enhancement.",
+    "The anthropogenic impact on global climate systems necessitates a comprehensive understanding of complex atmospheric and oceanic interactions.",
+    "The emergence of decentralized autonomous organizations challenges traditional paradigms of corporate governance and economic systems.",
+    "The integration of quantum computing in cryptographic systems may revolutionize current security protocols and data protection methods.",
+    "The development of brain-computer interfaces raises ethical considerations regarding the boundaries between human cognition and artificial systems."
 ];
 
 function updatePersonalBestDisplay() {
@@ -128,6 +148,7 @@ function initTyping() {
 
         updateStats();
         updateProgressBar();
+        playTypingSound();
     } else {
         finishTest();
     }
@@ -161,6 +182,7 @@ function handleCharacterTyping(characters, typedChar) {
     } else {
         mistakes++;
         currentStreak = 0;
+        vibrate();
     }
     
     characters[charIndex].classList.remove('current');
@@ -223,6 +245,10 @@ function finishTest() {
     updateTestHistory(result);
     showResult(result);
     saveToLocalStorage();
+    
+    if (result.wpm > personalBest.averageWPM) {
+        playSuccessSound();
+    }
 }
 
 function updatePersonalBest(result) {
@@ -253,10 +279,29 @@ function saveToLocalStorage() {
     localStorage.setItem('testHistory', JSON.stringify(testHistory));
 }
 
+function playTypingSound() {
+    if (!isPaused) {
+        typingSound.currentTime = 0;
+        typingSound.play().catch(() => {});
+    }
+}
+
+function playSuccessSound() {
+    const successSound = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU');
+    successSound.play().catch(() => {});
+}
+
+function vibrate() {
+    if (navigator.vibrate) {
+        navigator.vibrate(50);
+    }
+}
+
 function showResult(result) {
+    const improvement = result.wpm > personalBest.averageWPM ? '🎯 New Personal Best!' : '';
     const medal = getMedal(result.wpm);
     resultEl.innerHTML = `
-        Test Complete! ${medal}<br>
+        Test Complete! ${improvement} ${medal}<br>
         Speed: ${result.wpm} WPM | 
         Accuracy: ${result.accuracy}% | 
         Streak: ${result.streak} | 
